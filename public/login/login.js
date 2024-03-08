@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('User logged in successfully')
                 console.log(response.data.user);
                 localStorage.setItem('jwtToken', response.data.jwtToken)
+                localStorage.setItem('user',response.data.user.name)
+                window.location.href = "..\\chatapp\\chatapp.html"
             })
             
             .catch(error => {

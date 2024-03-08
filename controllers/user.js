@@ -26,7 +26,7 @@ exports.createUser = async (req, res) => {
   }
 };
 
-function generateAccessToken(id,name,premiumuser){
+function generateAccessToken(id,name){
   const jwtToken = jwt.sign({userId : id, name : name},process.env.TOKEN_SECRET)
   return jwtToken
 }

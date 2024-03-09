@@ -17,13 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try{
             const response = await axios.post('http://localhost:3000/user/chat', {messageText}, {headers :{"Authorization": token }})
             //console.log(response.data.chats.message)
+            chatInput.value = '';
             fetchAndDisplayChats()
         }catch(err){
             console.log(err)
         }
         
     }
-    fetchAndDisplayChats()
+    setInterval(fetchAndDisplayChats, 1000);
 
     async function fetchAndDisplayChats(){
         const token = localStorage.getItem('jwtToken')
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                 
                     chatMessages.appendChild(messageDiv);
-                    chatInput.value = '';
+                    //chatInput.value = '';
                     chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
                     }
                 });

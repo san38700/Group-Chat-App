@@ -1,4 +1,5 @@
 const Chat = require('../models/chat')
+const User = require('../models/user')
 
 
 exports.createChat = async (req, res) => {
@@ -12,4 +13,14 @@ exports.createChat = async (req, res) => {
     }catch (err){
         console.log(err)
     }
+}
+
+exports.getChats = async (req, res) => {
+    try{
+        const chats = await Chat.findAll({include: User})
+        res.status(200).json({chats: chats})
+    }catch(err){
+        console.log(err)
+    }
+    
 }

@@ -6,8 +6,8 @@ body {
 }
 
 .chat-container {
-    width: 400px;
-    margin: 50px auto;
+    width: 700px;
+    margin: 100px auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow: hidden;

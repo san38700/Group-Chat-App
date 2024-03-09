@@ -13,12 +13,14 @@ var cors = require('cors')
 
 
 const User = require('./models/user')
+const Chat = require('./models/chat')
 
 const sequelize = require('./util/database')
 
 const app = express();
 
 const userRoutes = require('./routes/user')
+const chatRoutes = require('./routes/chat')
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
 
@@ -29,6 +31,11 @@ app.use(morgan('combined', {stream: accessLogStream}))
 app.use(cors())
 
 app.use(userRoutes)
+app.use(chatRoutes)
+
+
+User.hasMany(Chat)
+Chat.belongsTo(User)
 
 // app.use((req,res) => {
 //     console.log('url',req.url)

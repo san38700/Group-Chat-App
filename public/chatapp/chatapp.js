@@ -24,20 +24,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
     }
-    setInterval(fetchAndDisplayChats, 1000);
+    //setInterval(fetchAndDisplayChats, 1000);
+    fetchAndDisplayChats()
 
     async function fetchAndDisplayChats(){
         const token = localStorage.getItem('jwtToken')
         //console.log(token)
-        try{
-            const response = await axios.get(`http://localhost:3000/user/chats`,{headers: {'Authorization': token }});
-            //console.log(response.data.chats[0].user.name)
+        const chats = []
+        const chatsJSON = JSON.stringify(chats);
+        localStorage.setItem('chats', chatsJSON);
+        const getChatsJSON = localStorage.getItem('chats');
+        console.log(getChatsJSON)
+        const storedChats = JSON.parse(getChatsJSON);
+        console.log(storedChats)
+        var lastMessageid
+        if (storedChats){
+            lastMessageid == 'undefined'
+        }else{
+            const lastMessage = storedChats[storedChats.length - 1]
+            lastMessageid = lastMessage.id
+        }
+        console.log(lastMessageid)
+        
+       try{
+            const response = await axios.get(`http://localhost:3000/user/chats?lastMessageid=${lastMessageid}`,{headers: {'Authorization': token }});
+            console.log(response.data.chats)
             const chats = response.data.chats
-            
+            const lastTenChats = chats.slice(-5)
+            console.log(lastTenChats)
+            const chatsJSON = JSON.stringify(lastTenChats);
+            localStorage.setItem('chats', chatsJSON);
+            const getChatsJSON = localStorage.getItem('chats');
+            //console.log(getChatsJSON)
+            const storedChats = JSON.parse(getChatsJSON);
+            //console.log(storedChats)
             chatMessages.innerText = ""
-
-            if (chats.length !== 0) {
-                chats.forEach(chat => {
+            chatMessages.innerHTML = `<div><button id="load-messages">Load Older messages</button></div>`
+            const loadMessages = document.getElementById('load-messages')
+            loadMessages.addEventListener('click', loadOlderMessages)
+            if (storedChats.length !== 0) {
+                storedChats.forEach(chat => {
                     //console.log(chat.message)
                     if (chat.message != ""){
                         const messageDiv = document.createElement('div');
@@ -61,6 +87,58 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
         }catch(err){
             console.log(err)
+        }
+
+        async function loadOlderMessages(){
+            const getChatsJSON = localStorage.getItem('chats');
+            //console.log(getChatsJSON)
+            const storedChats = JSON.parse(getChatsJSON);
+            const firstChat = storedChats[0]
+            const firstMessageId = firstChat.id
+            console.log(firstMessageId)
+            const response = await axios.get(`http://localhost:3000/user/chats?lastMessageid=${lastMessageid}&firstMessageId=${firstMessageId}&oldmessage=old`,{headers: {'Authorization': token }});
+            const chats = response.data.chats
+            const chatsJSON = JSON.stringify(chats);
+            localStorage.setItem('chats', chatsJSON);
+            const getOldChatsJSON = localStorage.getItem('chats');
+
+            //console.log(getChatsJSON)
+            const storedOldChats = JSON.parse(getOldChatsJSON);
+            console.log(storedOldChats)
+            chatMessages.innerText = ""
+            chatMessages.innerHTML = `<div><button id="load-messages">Load Older messages</button></div>`
+            const loadMessages = document.getElementById('load-messages')
+            loadMessages.addEventListener('click', loadOlderMessages)
+            if (storedOldChats.length !== 0) {
+                storedOldChats.forEach(chat => {
+                    //console.log(chat.message)
+                    if (chat.message != ""){
+                        const messageDiv = document.createElement('div');
+                        messageDiv.classList.add('message', 'sender');
+                        //console.log(chat.user.name)
+                        if (chat.user.name == userName){
+                            messageDiv.innerHTML = `<p> You: ${chat.message}</p>`;
+                        }else{
+
+                            // Change the background color
+                            messageDiv.style.backgroundColor = '#ff0000';
+                            messageDiv.innerHTML = `<p> ${chat.user.name}: ${chat.message}</p>`;
+                        }
+                
+                    chatMessages.appendChild(messageDiv);
+                    //chatInput.value = '';
+                    chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+                    
+                    }
+                });
+                
+                }
+                const newButton = document.createElement('div')
+                const button = document.createElement('button');
+                button.textContent = 'Newer Messages';
+                button.addEventListener('click',fetchAndDisplayChats)
+                newButton.appendChild(button)
+                chatMessages.appendChild(newButton)
         }
     }
         

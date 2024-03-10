@@ -1,5 +1,7 @@
+const { where } = require('sequelize')
 const Chat = require('../models/chat')
 const User = require('../models/user')
+const { Op } = require('sequelize');
 
 
 exports.createChat = async (req, res) => {
@@ -17,8 +19,36 @@ exports.createChat = async (req, res) => {
 
 exports.getChats = async (req, res) => {
     try{
-        const chats = await Chat.findAll({include: User})
-        res.status(200).json({chats: chats})
+        var id = parseInt(req.query.lastMessageid) || undefined
+        var oldmsg = req.query.oldmessage
+        var fid = parseInt(req.query.firstMessageId)
+        console.log(id)
+        console.log(oldmsg)
+        console.log(fid)
+        if (id == undefined && fid && oldmsg)  {
+            const chats = await Chat.findAll({
+                include: User,
+                where: {
+                  id: {
+                    [Op.lt]: fid 
+                  }
+                }
+              });
+            res.status(200).json({chats: chats})
+        }else{
+            id = -1
+            const chats = await Chat.findAll({
+                include: User,
+                where: {
+                  id: {
+                    [Op.gt]: id 
+                  }
+                }
+              });
+            res.status(200).json({chats: chats})
+        }
+        // const chats = await Chat.findAll({where: {id: id},include : User})
+        
     }catch(err){
         console.log(err)
     }

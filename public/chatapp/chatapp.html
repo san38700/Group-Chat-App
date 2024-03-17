@@ -7,11 +7,34 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <button type="button" id="show-group-form">Create Group</button>
+<form id="group-form" style="display: none;">
+    <label for="group-name">Enter Group Name:</label>
+    <input type="text" id="group-name" name="groupname"><br>
+    <label for="useremail">Enter multiple user email (separated by commas):</label><br>
+    <input type="text" id="useremail" name="useremail"><br>
+    <button type="submit">Create Group</button>
+</form>
+    <div class="users-container">
+        <p style="font-weight: bold;"> Chats </p>
+        <div id="group-header"></div>
+        <div id="add-user-div" style="display: none;">
+        <input type="text" placeholder="enter email" id="add-user-email">
+        <button type="submit"> Add User</button>
+        </div>
+        <div class="user-names">
+            <div class="user">User 1</div>
+            <div class="user">User 2</div>
+            <div class= "user">User 3</div>
+            <!-- Add more user elements as needed -->
+        </div>
+    </div>
+    
     <div class="chat-container">
         <div class="chat-header">
             <h2>Chat App</h2>
         </div>
-        <div id="online-users"></div>
+        <div id="active-chat"></div>
         <div class="chat-messages" id="chat-messages">
             <div>
                 <button id="load-messages">Load Older messages</button>

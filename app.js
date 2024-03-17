@@ -14,13 +14,17 @@ var cors = require('cors')
 
 const User = require('./models/user')
 const Chat = require('./models/chat')
+const Group = require('./models/group')
+const UserGroup = require('./models/usergroup')
 
 const sequelize = require('./util/database')
 
 const app = express();
 
 const userRoutes = require('./routes/user')
-const chatRoutes = require('./routes/chat')
+const chatRoutes = require('./routes/chat');
+const groupRoutes = require('./routes/group')
+const { group } = require('console');
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
 
@@ -32,10 +36,17 @@ app.use(cors())
 
 app.use(userRoutes)
 app.use(chatRoutes)
+app.use(groupRoutes)
 
 
 User.hasMany(Chat)
 Chat.belongsTo(User)
+
+User.belongsToMany(Group, { through: UserGroup })
+Group.belongsToMany(User, { through: UserGroup })
+
+Group.hasMany(Chat)
+Chat.belongsTo(Group)
 
 // app.use((req,res) => {
 //     console.log('url',req.url)

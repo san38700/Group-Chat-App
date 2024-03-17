@@ -8,4 +8,5 @@ const userAuthentication = require('../controllers/authentication')
 router.post('/user/chat', userAuthentication.userAuthentication, chatController.createChat);
 router.get('/user/chats', userAuthentication.userAuthentication, chatController.getChats)
 
+
 module.exports = router

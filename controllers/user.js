@@ -57,3 +57,19 @@ exports.userLogin = async (req, res) => {
       return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+exports.userSearch = async (req, res) => {
+  const {email} = req.body
+  try{
+    const user = await User.findOne({where: {email: email}});
+      console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not registered please invite user' });
+    }
+
+    return res.status(200).json({name:user.name, email: user.email})
+  }catch(err){
+    console.log(err)
+  }
+}

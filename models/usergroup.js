@@ -11,7 +11,14 @@ const UserGroup = sequelize.define('usergroup', {
     },
     role:{
         type:Sequelize.STRING,
+    },
+    username: {
+        type:Sequelize.STRING
+    },
+    groupname:{
+        type:Sequelize.STRING
     }
+
 })
 
 module.exports = UserGroup

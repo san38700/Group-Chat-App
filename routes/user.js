@@ -8,7 +8,7 @@ router.post('/user/signup', userController.createUser);
 
 router.post('/user/login', userController.userLogin)
 
-
+router.post('/user/search-user',userController.userSearch)
 
 
 module.exports = router

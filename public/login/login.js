@@ -38,8 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 errorContainer.innerHTML = ""
                 alert('User logged in successfully')
                 console.log(response.data.user);
+                const tokenvalue = {
+                    userName: response.data.user.name,
+                    userId: response.data.user.id
+                }
+                const stringifiedToken = JSON.stringify(tokenvalue)
                 localStorage.setItem('jwtToken', response.data.jwtToken)
-                localStorage.setItem('user',response.data.user.name)
+                localStorage.setItem('user',stringifiedToken)
                 window.location.href = "..\\chatapp\\chatapp.html"
             })
             

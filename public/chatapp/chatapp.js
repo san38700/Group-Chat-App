@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var emailArray = emails
         console.log(groupName)
         try{
-            const response = await axios.post('http://localhost:3000/user/newgroup', {groupName, emailArray}, {headers :{"Authorization": token }})
+            const response = await axios.post('http://13.60.42.83:3000/user/newgroup', {groupName, emailArray}, {headers :{"Authorization": token }})
             console.log(response)
         }catch(err){
             console.log(err)
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function postUser(groupId, groupName, email){
         try{
-            const response = await axios.post('http://localhost:3000/user/adduser-to-group', {groupId, groupName, email})
+            const response = await axios.post('http://13.60.42.83:3000/user/adduser-to-group', {groupId, groupName, email})
             console.log(response)
             fetchGroupUsers(groupId)
         }catch(err){
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault()
         const email = userEmail.value
         try{
-            const users = await axios.post('http://localhost:3000/user/search-user',{email})
+            const users = await axios.post('http://13.60.42.83:3000/user/search-user',{email})
             console.log(users)
             const displayuserDiv = document.getElementById('list-users')
             const userDiv = document.createElement('div')
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(groupId)
         //console.log(messageText)
         try{
-            const response = await axios.post('http://localhost:3000/user/chat', {messageText, groupId}, {headers :{"Authorization": token }})
+            const response = await axios.post('http://13.60.42.83:3000/user/chat', {messageText, groupId}, {headers :{"Authorization": token }})
             //console.log(response.data.chats.message)
             chatInput.value = '';
             fetchAndDisplayChats(groupId)
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('lastmessageid:',lastMessageid)
         
        try{
-            const response = await axios.get(`http://localhost:3000/user/chats?lastMessageid=${lastMessageid}&groupid=${groupId}`,{headers: {'Authorization': token }});
+            const response = await axios.get(`http://13.60.42.83:3000/user/chats?lastMessageid=${lastMessageid}&groupid=${groupId}`,{headers: {'Authorization': token }});
             console.log(response.data.chats)
             const chats = response.data.chats
             const lastTenChats = JSON.stringify(chats.slice(-5))
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(firstChat)
             const firstMessageId = firstChat.id
             console.log(firstMessageId)
-            const response = await axios.get(`http://localhost:3000/user/chats?lastMessageid=${lastMessageid}&firstMessageId=${firstMessageId}&groupid=${groupId}`,{headers: {'Authorization': token }});
+            const response = await axios.get(`http://13.60.42.83:3000/user/chats?lastMessageid=${lastMessageid}&firstMessageId=${firstMessageId}&groupid=${groupId}`,{headers: {'Authorization': token }});
             const chats = response.data.chats
             const chatsJSON = JSON.stringify(chats);
             localStorage.setItem('chats', chatsJSON);
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchGroupUsers(groupId){
-        const response = await axios.get(`http://localhost:3000/group/getgroupsusers?groupid=${groupId}`);
+        const response = await axios.get(`http://13.60.42.83:3000/group/getgroupsusers?groupid=${groupId}`);
         console.log(response.data.groupusers)
         const Users = response.data.groupusers
         groupUsers.innerHTML = ""
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function checkAdminStatus(groupId, token) {
-        const response = await axios.get(`http://localhost:3000/group/checkadminstatus?groupid=${groupId}`,{headers: {'Authorization': token }});
+        const response = await axios.get(`http://13.60.42.83:3000/group/checkadminstatus?groupid=${groupId}`,{headers: {'Authorization': token }});
         //return response.data
         console.log(response.data.isadmin)
         //console.log(typeof(response.data.isadmin))
@@ -300,24 +300,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function makeAdmin(userId,groupId){
-        const response = await axios.post(`http://localhost:3000/group/addadmin`,{userId,groupId});
+        const response = await axios.post(`http://13.60.42.83:3000/group/addadmin`,{userId,groupId});
         console.log(response.data)
         fetchGroupUsers(groupId)
     }
 
     async function removeUser(userId,groupId){
-        const response = await axios.post(`http://localhost:3000/group/removeuser`,{userId,groupId});
+        const response = await axios.post(`http://13.60.42.83:3000/group/removeuser`,{userId,groupId});
         console.log(response.data)
         fetchGroupUsers(groupId)
     }
 
     async function fetchGroups(){
         
-        const response = await axios.get(`http://localhost:3000/group/getgroups`,{headers: {'Authorization': token }});
+        const response = await axios.get(`http://13.60.42.83:3000/group/getgroups`,{headers: {'Authorization': token }});
         console.log(response.data)
         const groups = response.data.group
         groupHeader.innerHTML = ""
         const buttonDiv = document.createElement('div')
+        let chatInterval
         
         groups.forEach(group => {
            
@@ -327,9 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
             link.href = '#'
             link.textContent = `${group.groupname}`
             link.addEventListener("click", ()=> {
-                console.log('clicked')
+                //console.log('clicked')
                 chatHeader.innerText = group.groupname
-                fetchAndDisplayChats(group.id)
+                clearInterval(chatInterval);
+                //chatInterval()
+                chatInterval = setInterval(() => {
+                    fetchAndDisplayChats(group.id)
+                }, 1000);
+                //fetchAndDisplayChats(group.id)
                 fetchGroupUsers(group.id)
                 sendBtn.addEventListener('click', () => {
                     sendMessage(group.id);

@@ -15,6 +15,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^3.9.2",
     "sequelize": "^6.37.1",
+    "sib-api-v3-sdk": "^8.5.0",
     "transaction": "^0.0.2"
   },
   "name": "sequelize",

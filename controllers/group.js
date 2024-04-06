@@ -86,9 +86,10 @@ exports.addUserToGroup = async (req, res) => {
     const {groupId, groupName, email} = req.body
     try{
         const user = await User.findOne({where: {email: email}})
-        console.log('user',user.id)
+        //console.log('user',user.id)
+        console.log(user)
         if(!user){
-            res.status(404).json({message: 'User not registered Please invite user', user: user})
+            return res.status(404).json({message: 'User not registered Please invite user', user: user})
         }
         const existingUserGroup = await UserGroup.findOne({ where: { userId: user.id, groupId: groupId } });
         console.log('existingUserGroup', existingUserGroup);

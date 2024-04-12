@@ -14,6 +14,9 @@ const addUserInput = document.getElementById('add-user-div')
 const userSearchButton = document.getElementById('user-search')
 const groupUsers = document.getElementById('group-users')
 
+
+
+
 let emails = []
 //console.log(createName)
 
@@ -141,11 +144,19 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplayChats()
     fetchGroups()
 
+    const socket = io();
+    // socket.on('newChatMessage', (message) => {
+    //     // Append the new message to the chat window
+    //    console.log(message)
+    // });
+
+    //socket.emit('chatMessage', 'hello');
+
     async function fetchAndDisplayChats(groupId){
         const token = localStorage.getItem('jwtToken')
         //console.log(token)
         let chats = localStorage.getItem('chats')
-        console.log('chats:',chats)
+        //console.log('chats:',chats)
         //console.log(chats.length)
         var lastMessageid
         if (chats == null){
@@ -165,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(response.data.chats)
             const chats = response.data.chats
             const lastTenChats = JSON.stringify(chats.slice(-5))
-            console.log('lasttenchats:',lastTenChats)
+            //console.log('lasttenchats:',lastTenChats)
             localStorage.setItem('chats', lastTenChats)
             const storedChats = JSON.parse(localStorage.getItem('chats'))
             console.log('sliced:',storedChats)
@@ -190,6 +201,11 @@ document.addEventListener('DOMContentLoaded', () => {
             loadMessages.addEventListener('click', () => {
                 loadOlderMessages(groupId)
             })
+            
+            //console.log(chat.user.name)
+            
+           
+           
             if (Chats.length !== 0) {
                 Chats.forEach(chat => {
                     //console.log(chat.message)
@@ -330,11 +346,17 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener("click", ()=> {
                 //console.log('clicked')
                 chatHeader.innerText = group.groupname
-                clearInterval(chatInterval);
-                //chatInterval()
-                chatInterval = setInterval(() => {
-                    fetchAndDisplayChats(group.id)
-                }, 1000);
+                // clearInterval(chatInterval);
+                // //chatInterval()
+                // chatInterval = setInterval(() => {
+                //     fetchAndDisplayChats(group.id)
+                // }, 1000);
+                fetchAndDisplayChats(group.id)
+                socket.on('newChatMessage', (chats) => {
+                    if(chats.groupId === group.id){
+                        fetchAndDisplayChats(group.id);
+                    }
+                })
                 //fetchAndDisplayChats(group.id)
                 fetchGroupUsers(group.id)
                 sendBtn.addEventListener('click', () => {

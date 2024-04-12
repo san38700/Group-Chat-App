@@ -5,6 +5,7 @@ require('dotenv').config();
 const path = require('path');
 const fs = require('fs')
 
+
 const bodyParser = require('body-parser');
 const helmet = require('helmet')
 const compression = require('compression')
@@ -18,9 +19,18 @@ const Group = require('./models/group')
 const UserGroup = require('./models/usergroup')
 const ForgotPasswordRequest = require('./models/forgotpassword')
 
+const socketIo = require('./controllers/socketserver')
+
 const sequelize = require('./util/database')
 
 const app = express();
+
+const server = require('http').createServer(app); // Create HTTP server
+const io = socketIo(server); // Initialize Socket.IO with the HTTP server
+module.exports = io
+
+//app.use('/socket.io', express.static(path.join(__dirname, 'node_modules', 'socket.io', 'client-dist')));
+
 
 const userRoutes = require('./routes/user')
 const chatRoutes = require('./routes/chat');
@@ -59,9 +69,23 @@ app.use((req,res) => {
     res.sendFile(path.join(__dirname,`public/${req.url}`))
 })
 
+// io.on('connect', (socket) => {
+//     console.log('A user connected', `${socket.id}`);
+    
+//     socket.on('chatMessage',(data) => {
+//         console.log(data)
+
+//         io.emit('newChatMessage', `${data} Back from server`);
+//     } )
+   
+
+// })
+
+
 
 sequelize
     // .sync({force: true})
     .sync()
-    .then(result => app.listen(3000))
+    .then(result => server.listen(3000))
     .catch(err => console.log(err))
+

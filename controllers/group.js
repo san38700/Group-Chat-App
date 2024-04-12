@@ -113,7 +113,7 @@ exports.checkAdminStatus = async (req, res) => {
     let isAdmin
     try{
         const adminstatus = await UserGroup.findOne({where: {userId: user.id, groupId: groupid}})
-        console.log(adminstatus)
+        //console.log(adminstatus)
         if (adminstatus.role === 'admin'){
             isAdmin = true
         }else{

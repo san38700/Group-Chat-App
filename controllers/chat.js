@@ -3,6 +3,8 @@ const Chat = require('../models/chat')
 const User = require('../models/user')
 const Group = require('../models/group')
 const { Op } = require('sequelize');
+const io = require('../app.js')
+
 
 
 exports.createChat = async (req, res) => {
@@ -12,6 +14,8 @@ exports.createChat = async (req, res) => {
     // console.log(user)
     try{
         const chats = await Chat.create({message: messageText, userId: user.id, groupId: groupId })
+
+        io.emit('newChatMessage', chats)
         res.status(201).json({chats : chats})
     }catch (err){
         console.log(err)

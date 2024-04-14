@@ -36,6 +36,7 @@ const userRoutes = require('./routes/user')
 const chatRoutes = require('./routes/chat');
 const groupRoutes = require('./routes/group')
 const passwordRoutes = require('./routes/forgotpassword')
+const multimediaFileRoutes = require('./routes/multimediafile')
 const { group } = require('console');
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
@@ -50,6 +51,7 @@ app.use(userRoutes)
 app.use(chatRoutes)
 app.use(groupRoutes)
 app.use(passwordRoutes)
+app.use(multimediaFileRoutes)
 
 
 User.hasMany(Chat)

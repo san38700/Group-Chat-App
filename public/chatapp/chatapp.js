@@ -1,4 +1,4 @@
-const chatInput = document.getElementById('chat-input');
+var chatInput = document.getElementById('chat-input');
 var sendBtn = document.getElementById('send-btn');
 const chatMessages = document.getElementById('chat-messages');
 const onlineUsers = document.getElementById('online-users')
@@ -13,7 +13,9 @@ const chatHeader = document.getElementById('active-chat')
 const addUserInput = document.getElementById('add-user-div')
 const userSearchButton = document.getElementById('user-search')
 const groupUsers = document.getElementById('group-users')
-
+const uploadButton = document.getElementById('uploadbutton')
+const chatWindow = document.querySelector('.chat-container')
+const uploadConfirmation = document.getElementById('uploadconfirm')
 
 
 
@@ -29,6 +31,53 @@ document.addEventListener('DOMContentLoaded', () => {
     createGroupButton.addEventListener('click', hideCreateGroupButton)
     userSearchButton.addEventListener('click', searchUsers)
     submitGroupForm.addEventListener('submit', createNewGroup)
+    //uploadButton.addEventListener('click', uploadFile)
+
+    async function uploadFile(groupId) {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0]; // Get the selected file
+        //console.log('file-->',file)
+        console.log('groupid',groupId)
+        if (!file) {
+            console.log('No file selected.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        formData.append('groupId', groupId)
+        console.log('data',formData)
+        try {
+            const response = await axios.post('http://13.60.42.83:3000/user/uploadfile', formData, {headers: 
+            {
+            "Authorization": token,
+            'Content-Type': 'multipart/form-data'
+            }
+            });
+            
+            var linkElement = document.createElement("a");
+            linkElement.href = response.data.fileURL;
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+            const date = currentDate.getDate().toString().padStart(2, '0');
+            const hours = currentDate.getHours().toString().padStart(2, '0');
+            const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+            const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+           
+            linkElement.textContent =  `CA${groupId}/${year}${month}${date}_${hours}${minutes}${seconds}`;
+            linkElement.style.color = "gold"; 
+            chatInput.value = linkElement.outerHTML;
+            chatInput.classList.add("hide-value");
+            const uploadConfirmation = document.getElementById('uploadconfirm')
+            uploadConfirmation.style.display = 'block'
+            alert('File uploaded successfully click send')
+            document.getElementById('fileInput').value = '';
+            console.log('File uploaded successfully:', response.data);
+            
+        } catch (error) {
+            console.error('Error uploading file:', error);
+        }
+    }
     
 
     function hideCreateGroupButton(e){
@@ -128,12 +177,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function sendMessage(groupId) {
         const messageText = chatInput.value
-        console.log(groupId)
-        //console.log(messageText)
+        //console.log(groupId)
+        console.log('message',messageText)
         try{
             const response = await axios.post('http://13.60.42.83:3000/user/chat', {messageText, groupId}, {headers :{"Authorization": token }})
             //console.log(response.data.chats.message)
             chatInput.value = '';
+            uploadConfirmation.style.display = 'none'
+            chatInput.classList.remove("hide-value");
             fetchAndDisplayChats(groupId)
         }catch(err){
             console.log(err)
@@ -141,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
     //setInterval(fetchAndDisplayChats, 1000);
-    fetchAndDisplayChats()
+    //fetchAndDisplayChats()
     fetchGroups()
 
     const socket = io();
@@ -212,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (chat.message != ""){
                         const messageDiv = document.createElement('div');
                         messageDiv.classList.add('message', 'sender');
+                        messageDiv.style.backgroundColor = "#0802c4"
                         //console.log(chat.user.name)
                         if (chat.user.name == userName.userName){
                             messageDiv.innerHTML = `<p> You: ${chat.message}</p>`;
@@ -337,7 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let chatInterval
         
         groups.forEach(group => {
-           
             const groupDiv = document.createElement('div')
             //const buttonDiv = document.createElement('div')
             const link = document.createElement("a");
@@ -345,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.textContent = `${group.groupname}`
             link.addEventListener("click", ()=> {
                 //console.log('clicked')
+                chatWindow.style.display = 'block'
                 chatHeader.innerText = group.groupname
                 // clearInterval(chatInterval);
                 // //chatInterval()
@@ -355,13 +407,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.on('newChatMessage', (chats) => {
                     if(chats.groupId === group.id){
                         fetchAndDisplayChats(group.id);
+
                     }
                 })
                 //fetchAndDisplayChats(group.id)
                 fetchGroupUsers(group.id)
+                uploadButton.addEventListener('click', () => {
+                    uploadFile(group.id)
+                })
                 sendBtn.addEventListener('click', () => {
                     sendMessage(group.id);
                 });
+                
                 buttonDiv.innerHTML = ""
                 addUserInput.style.display = 'none'
                 const addUserButton = document.createElement('button')

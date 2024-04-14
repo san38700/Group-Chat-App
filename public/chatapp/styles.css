@@ -109,3 +109,27 @@ body {
     background-color: #f0f0f0; /* Set background color */
     border-bottom: 2px solid #ccc; /* Add a border to the bottom */
 }
+.hide-value {
+    position: absolute !important;
+    height: 1px; width: 1px; 
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap; /* added line */
+}
+#uploadbutton {
+    /* Add some padding */
+    padding: 10px 20px;
+    /* Add some margin */
+    margin: 5px;
+    /* Add a border-radius to make the button slightly rounded */
+    border-radius: 5px;
+    /* Add a transition for smooth hover effects */
+    transition: background-color 0.3s ease;
+}
+
+#uploadbutton:hover {
+    /* Darken the button color on hover */
+    background-color: #28a745; /* Darker shade of green */
+    /* You can also add other hover effects here */
+}

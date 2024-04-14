@@ -32,7 +32,7 @@
         </div>
     </div>
     
-    <div class="chat-container">
+    <div class="chat-container" style="display: none;">
         <div class="chat-header">
             <h2>Chat App</h2>
         </div>
@@ -44,6 +44,9 @@
             <!-- Messages will be displayed here -->
         </div>
         <textarea class="chat-input" id="chat-input" placeholder="Type your message..."></textarea>
+        <input type="file" id="fileInput" accept="image/*, video/*, .pdf, .doc, .docx">
+        <div><button id="uploadbutton" class="btn btn-success">Upload</button></div>
+        <p id="uploadconfirm" style="display: none;">File Added Successfully Click Send</p>
         <button class="send-btn" id="send-btn">Send</button>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>

@@ -293,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(firstMessageId)
             const response = await axios.get(`http://13.60.45.41:3000/user/chats?lastMessageid=${lastMessageid}&firstMessageId=${firstMessageId}&groupid=${groupId}`,{headers: {'Authorization': token }});
             const chats = response.data.chats
+            console.log(typeof(chats))
             const chatsJSON = JSON.stringify(chats);
             localStorage.setItem('chats', chatsJSON);
             const getOldChatsJSON = localStorage.getItem('chats');

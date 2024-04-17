@@ -5,6 +5,8 @@ require('dotenv').config();
 const path = require('path');
 const fs = require('fs')
 
+const cron = require('node-cron');
+
 
 const bodyParser = require('body-parser');
 const helmet = require('helmet')
@@ -37,6 +39,7 @@ const chatRoutes = require('./routes/chat');
 const groupRoutes = require('./routes/group')
 const passwordRoutes = require('./routes/forgotpassword')
 const multimediaFileRoutes = require('./routes/multimediafile')
+const { archiveChats } = require('./controllers/archivedchat')
 const { group } = require('console');
 
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'})
@@ -66,23 +69,15 @@ Chat.belongsTo(Group)
 User.hasMany(ForgotPasswordRequest)
 ForgotPasswordRequest.belongsTo(User)
 
+cron.schedule('0 0 * * *', async () => {
+    console.log('Cron job executed at:', new Date().toLocaleString());
+    await archiveChats();
+});
+
 app.use((req,res) => {
     console.log('url',req.url)
     res.sendFile(path.join(__dirname,`public/${req.url}`))
 })
-
-// io.on('connect', (socket) => {
-//     console.log('A user connected', `${socket.id}`);
-    
-//     socket.on('chatMessage',(data) => {
-//         console.log(data)
-
-//         io.emit('newChatMessage', `${data} Back from server`);
-//     } )
-   
-
-// })
-
 
 
 sequelize

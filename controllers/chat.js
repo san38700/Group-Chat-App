@@ -6,7 +6,6 @@ const { Op } = require('sequelize');
 const io = require('../app.js')
 
 
-
 exports.createChat = async (req, res) => {
     const { messageText, groupId } = req.body
     const user = req.user
